@@ -1,0 +1,54 @@
+CREATE TABLE books (
+    book_id NUMBER PRIMARY KEY,
+    title VARCHAR2(200) NOT NULL,
+    author VARCHAR2(101) NOT NULL,
+    is_available CHAR(1) DEFAULT 'Y' CHECK (is_available IN ('Y', 'N'))
+);
+
+CREATE TABLE readers (
+    reader_id NUMBER PRIMARY KEY,
+    reader_name VARCHAR2(100) NOT NULL
+);
+
+CREATE INDEX idx_reader_name ON readers(reader_name);
+
+CREATE OR REPLACE PROCEDURE GREET_USER (p_name IN VARCHAR2) AS
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Welcome, ' || p_name || ' to Prod Library!');
+END;
+/
+
+CREATE OR REPLACE PACKAGE library_pkg AS
+    PROCEDURE add_book(p_title IN VARCHAR2, p_author IN VARCHAR2);
+END library_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY library_pkg AS
+    PROCEDURE add_book(p_title IN VARCHAR2, p_author IN VARCHAR2) AS
+    BEGIN
+        INSERT INTO books (book_id, title, author)
+        VALUES (books_seq.NEXTVAL, p_title, p_author);
+    END;
+END library_pkg;
+/
+
+CREATE SEQUENCE books_seq START WITH 1;
+
+CREATE TABLE wrong_table (
+    id NUMBER PRIMARY KEY,
+    data VARCHAR2(50)
+);
+
+DROP TABLE books CASCADE CONSTRAINTS;
+DROP TABLE readers CASCADE CONSTRAINTS;
+DROP TABLE wrong_table CASCADE CONSTRAINTS;
+DROP TABLE LOANS CASCADE CONSTRAINTS;
+DROP INDEX IDX_READER_NAME;
+DROP PROCEDURE GREET_USER;
+DROP PROCEDURE SYNC_SCHEMA_OBJECTS;
+DROP FUNCTION CALC_FINE;
+DROP PACKAGE library_pkg;
+DROP SEQUENCE books_seq;
+PURGE RECYCLEBIN;
+DROP TABLE BOOKS;
+DROP TABLE READERS;
